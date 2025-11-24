@@ -1,1 +1,135 @@
-<!-- Git Check...-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Vue Emoji Mood Selector</title>
+
+  <!-- Selecting a special and vibrant font for the site -->
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+  <!-- Vue 3 connection-->
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+
+  <!-- Connecting to the CSS file-->
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="page-frame">
+
+  <div class="content-container">
+
+    <h1 class="main-title">VUE.JS</h1>
+
+    <!-- VUE APP (THE MAIN PART)-->
+    <div id="app" :class="['card', selectedMood.class]">
+
+        
+      <h2 class="comic-subtitle">Select Your Mood</h2>
+
+      <!-- Dropdown -->
+      <div class="dropdown-wrapper">
+        <select v-model="selectedMood" class="select-box" @change="playSound">
+          <option disabled value="">Choose a mood...</option>
+
+          <option v-for="mood in moods" :value="mood">
+            {{ mood.label }}
+          </option>
+        </select>
+      </div>
+
+      <!-- Emoji (normal) or GIF (for ?) -->
+      <div class="emoji-wrapper">
+        
+        <!-- normal emoji -->
+        <div v-if="selectedMood && !selectedMood.gif"
+             class="emoji"
+             @click="emojiClicked">
+          {{ selectedMood.emoji }}
+        </div>
+
+        <!-- fullscreen rickroll gif -->
+        <img v-if="selectedMood && selectedMood.gif"
+             :src="selectedMood.gif"
+             class="emoji-gif"
+             @click="emojiClicked">
+      </div>
+
+      <!-- Message -->
+      <div v-if="selectedMood" class="message">
+        You feel <strong>{{ selectedMood.label }}</strong> today!
+      </div>
+
+    </div> <!-- END OF THE VUE APP-->
+
+    <!-- The Footer of the site -->
+    <footer>
+      <p><strong>TeamVue</strong></p>
+      <p>Tanishq • Mayank • Tamanna • Vaibhav </p>
+    </footer>
+
+  </div>
+
+  <!-- LOGIC FOR THE VUE APP-->
+  <script>
+    const app = Vue.createApp({
+      data() {
+        return {
+          selectedMood: "",
+          currentAudio: null,
+
+          /*CREATING A DROP DOWN SELECTION FOR THE EMOJIS...TRIED ADDING THE SOUND TO OTHER FILES BUT DIDNT DO IT THEN*/
+          moods: [
+            { label: "Happy", emoji: "😀", file: "sounds/happy.mp3", class: "happy" },
+            { label: "Sad", emoji: "😢", file: "sounds/sad.mp3", class: "sad" },
+            { label: "Angry", emoji: "😡", file: "sounds/angry.mp3", class: "angry" },
+            { label: "Excited", emoji: "🤩", file: "sounds/excited.mp3", class: "excited" },
+
+            /* SECRET ELEMENT */
+            { 
+              label: "?", 
+              emoji: "❓", 
+              file: "sounds/rickroll.mp3", 
+              gif: "rick/r1.gif.gif", 
+              class: "confused" 
+            }
+          ]
+        };
+      },
+
+      methods: {
+
+        // Play sound when a new mood is selected from the dropdown
+        playSound() {
+          if (this.currentAudio) {
+            this.currentAudio.pause();
+            this.currentAudio.currentTime = 0;
+          }
+
+           // Play new audio linked to the selected mood
+          if (this.selectedMood && this.selectedMood.file) {
+            this.currentAudio = new Audio(this.selectedMood.file);
+            this.currentAudio.volume = 0.9;
+            this.currentAudio.play();
+          }
+        },
+
+        emojiClicked() {
+          if (this.selectedMood) {
+            if (this.currentAudio) {
+              this.currentAudio.pause();
+              this.currentAudio.currentTime = 0;
+            }
+            this.currentAudio = new Audio(this.selectedMood.file);
+            this.currentAudio.volume = 1;
+            this.currentAudio.play();
+          }
+        }
+      }
+    });
+
+     // Mount Vue app to #app div
+    app.mount("#app");
+  </script>
+
+</body>
+</html>
